@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vector math</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.3.4/p5.min.js" integrity="sha512-zGE8CPs+hefOAOSuF8c8Hbt/DDoL+hsJax12U8UCPomxYkPMf4qhQmJTwSG7KzDjmemumjHFF13pUpouT4Ka1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </head>
+
+  <body>
+    <div id="canvasContainer"></div>
+
+    <div class="vector-controls red">
+      <label>Vector 1 |</label>
+      <label>X:</label>
+      <input type="text" id="i_v1x">
+      <label>Y:</label>
+      <input type="text" id="i_v1y">
+      <button id="b_normalizeV1">Normalize</button>
+    </div>
+
+    <div class="vector-controls blue">
+      <label>Vector 2 |</label>
+      <label>X:</label>
+      <input type="text" id="i_v2x">
+      <label>Y:</label>
+      <input type="text" id="i_v2y">
+      <button id="b_normalizeV2">Normalize</button>
+    </div>
+
+    <div class="vector-controls green">
+      <label>Operation:</label>
+      <select id="sel_operation">
+        <option value="add">Add</option>
+        <option value="sub">Subtract</option>
+        <option value="dot">Dot</option>
+      </select>
+    </div>
+    
+    <script src="sketch.js"></script>
+  </body>
+</html>

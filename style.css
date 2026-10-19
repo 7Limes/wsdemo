@@ -1,0 +1,58 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    background-color: #272727;
+    color: white;
+    font-family: sans-serif;
+}
+
+canvas {
+    display: block;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+button, input, select {
+    background-color: #404040;
+    color: white;
+    border: 1px solid white;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+button:hover {
+    background-color: #606060;
+    transition: background-color 0.25s;
+}
+
+.vector-controls {
+    background-color: #505050;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 5px;
+    
+    width: 500px;
+}
+
+.vector-controls.red {
+    background-color: #dd6565;
+}
+
+.vector-controls.blue {
+    background-color: #6767d1;
+}
+
+.vector-controls.green {
+    background-color: #49a549;
+}
+
+.vector-controls input {
+    width: 50px;
+}
