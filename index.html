@@ -39,7 +39,17 @@
         <option value="sub">Subtract</option>
         <option value="dot">Dot</option>
         <option value="norm_dot">Normalized Dot</option>
+        <option value="proj_1_on_2">Project v1 onto v2</option>
+        <option value="proj_2_on_1">Project v2 onto v1</option>
+        <option value="reflect_1_on_2">Reflect v1 across v2</option>
+        <option value="reflect_2_on_1">Reflect v2 across v1</option>
+        <option value="lerp">Lerp</option>
       </select>
+
+      <div id="lerpTContainer" class="lerp-container hidden">
+        <label for="i_lerpT">t:</label>
+        <input type="range" id="i_lerpTSlider">
+      </div>
     </div>
 
     <div class="settings">
@@ -52,9 +62,15 @@
         <input type="checkbox" checked="true" id="cb_showV2">
         <label for="cb_showV2" class="noselect">Show Vector 2</label>
       </div>
+
       <div>
         <input type="checkbox" checked="true" id="cb_showV3">
         <label for="cb_showV3" class="noselect">Show Result Vector</label>
+      </div>
+
+      <div>
+        <input type="checkbox" id="cb_showV3AsPosition">
+        <label for="cb_showV3AsPosition" class="noselect">Display Result Vector as Position</label>
       </div>
 
       <div>

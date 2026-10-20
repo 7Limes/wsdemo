@@ -38,6 +38,10 @@ button:hover {
                           supported by Chrome, Edge, Opera and Firefox */
 }
 
+.hidden {
+    display: none !important;
+}
+
 .vector-controls {
     background-color: #505050;
     display: flex;
@@ -66,6 +70,17 @@ button:hover {
 
 .vector-controls input {
     width: 50px;
+}
+
+.lerp-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.lerp-container input[type="range"] {
+    width: 100px;
 }
 
 .settings {

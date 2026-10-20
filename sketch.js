@@ -34,10 +34,13 @@ let i_v2y = document.getElementById('i_v2y');
 let b_normalizeV2 = document.getElementById('b_normalizeV2');
 
 let sel_operation = document.getElementById('sel_operation');
+let i_lerpTSlider = document.getElementById('i_lerpTSlider');
+let lerpTContainer = document.getElementById('lerpTContainer');
 
 let cb_showV1 = document.getElementById('cb_showV1');
 let cb_showV2 = document.getElementById('cb_showV2');
 let cb_showV3 = document.getElementById('cb_showV3');
+let cb_showV3AsPosition = document.getElementById('cb_showV3AsPosition');
 let cb_showAngle = document.getElementById('cb_showAngle');
 let cb_showTriangles = document.getElementById('cb_showTriangles');
 
@@ -55,9 +58,20 @@ class DrawableVector {
         return checkPos.dist(this.vector) < 0.25;
     }
 
-    draw() {
+    draw(drawAsPosition=false) {
         const scaledVec = this.vector.copy().mult(DRAW_SCALE);
-        drawArrow(CENTER_SCALED.x, CENTER_SCALED.y, scaledVec, this.color, this.arrowSize);
+
+        if (drawAsPosition) {
+            const pos = scaledVec.copy().add(CENTER_SCALED);
+            push();
+            noStroke();
+            fill(this.color);
+            circle(pos.x, pos.y, 10);
+            pop();
+        }
+        else {
+            drawArrow(CENTER_SCALED.x, CENTER_SCALED.y, scaledVec, this.color, this.arrowSize);
+        }
 
         if (this.selectable && this.isMouseOver() && selectedVector === null) {
             let drawPos = CENTER_POS.copy().add(this.vector).mult(DRAW_SCALE);
@@ -124,6 +138,12 @@ function clampVector(vec, lower, upper) {
 }
 
 
+function projectVector(v1, v2) {
+    const scale = v1.dot(v2) / v2.dot(v2);
+    return v2.copy().mult(scale);
+}
+
+
 function updateInputs() {
     i_v1x.value = roundNumber(v1.vector.x, 1);
     i_v1y.value = roundNumber(v1.vector.y, 1);
@@ -169,6 +189,23 @@ function updateResultVector() {
         case "norm_dot":
             let normDot = v1.vector.copy().normalize().dot(v2.vector.copy().normalize());
             result = createVector(normDot, 0);
+            break;
+        case "proj_1_on_2":
+            result = projectVector(v1.vector, v2.vector);
+            break;
+        case "proj_2_on_1":
+            result = projectVector(v2.vector, v1.vector);
+            break;
+        case "reflect_1_on_2":
+            result = projectVector(v1.vector, v2.vector).mult(2).sub(v1.vector);
+            break;
+        case "reflect_2_on_1":
+            result = projectVector(v2.vector, v1.vector).mult(2).sub(v2.vector);
+            break;
+        case "lerp":
+            const t = parseInt(i_lerpTSlider.value) / 100;
+            result = v1.vector.copy().lerp(v2.vector, t);
+            break;
     }
 
     // Only restart tween when the target changes
@@ -246,7 +283,7 @@ function drawVectorTriangles() {
     pop();
 }
 
-function drawResultVector() {
+function drawResultVector(drawAsPosition=false) {
     if (resultVectorTarget !== null && resultVectorTweenTimer < RESULT_VEC_TWEEN_DURATION) {
         resultVectorTweenTimer = moveToward(resultVectorTweenTimer, RESULT_VEC_TWEEN_DURATION, deltaTime / 1000);
         const t = resultVectorTweenTimer / RESULT_VEC_TWEEN_DURATION;
@@ -254,7 +291,7 @@ function drawResultVector() {
         v3.vector = p5.Vector.lerp(resultVectorStart, resultVectorTarget, eased);
     }
 
-    v3.draw();
+    v3.draw(drawAsPosition);
 }
 
 
@@ -295,7 +332,7 @@ function draw() {
         v2.draw();
     }
     if (cb_showV3.checked) {
-        drawResultVector();
+        drawResultVector(cb_showV3AsPosition.checked);
     }
 
     if (cb_showAngle.checked && cb_showV1.checked && cb_showV2.checked) {
@@ -339,3 +376,13 @@ b_normalizeV2.addEventListener("click", () => {
     v2.vector.normalize();
     updateInputs();
 });
+
+
+sel_operation.addEventListener("change", () => {
+    if (sel_operation.value === "lerp") {
+        lerpTContainer.classList.remove("hidden");
+    }
+    else {
+        lerpTContainer.classList.add("hidden");
+    }
+})
