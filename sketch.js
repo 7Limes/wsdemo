@@ -171,7 +171,7 @@ function updateResultVector() {
             result = createVector(normDot, 0);
     }
 
-    // Only restart the tween when the target actually changes
+    // Only restart tween when the target changes
     if (resultVectorTarget === null || !result.equals(resultVectorTarget)) {
         resultVectorStart = v3.vector.copy();
         resultVectorTarget = result;
@@ -212,29 +212,36 @@ function drawVectorTriangles() {
     drawingContext.setLineDash([5]);
 
     // v1 lines
-    line(CENTER_SCALED.x, CENTER_SCALED.y, v1Transformed.x, CENTER_SCALED.y);
-    line(v1Transformed.x, v1Transformed.y, v1Transformed.x, CENTER_SCALED.y);
-
+    if (cb_showV1.checked) {
+        line(CENTER_SCALED.x, CENTER_SCALED.y, v1Transformed.x, CENTER_SCALED.y);
+        line(v1Transformed.x, v1Transformed.y, v1Transformed.x, CENTER_SCALED.y);
+    }
     
     // v2 lines
-    line(CENTER_SCALED.x, CENTER_SCALED.y, v2Transformed.x, CENTER_SCALED.y);
-    line(v2Transformed.x, v2Transformed.y, v2Transformed.x, CENTER_SCALED.y);
+    if (cb_showV2.checked) {
+        line(CENTER_SCALED.x, CENTER_SCALED.y, v2Transformed.x, CENTER_SCALED.y);
+        line(v2Transformed.x, v2Transformed.y, v2Transformed.x, CENTER_SCALED.y);
+    }
     
     noStroke();
 
     // v1 text
-    fill(200, 40, 40);
-    textAlign(CENTER);
-    text(roundNumber(v1.vector.x, 1), CENTER_SCALED.x + v1.vector.x*DRAW_SCALE/2, CENTER_SCALED.y - 5);
-    textAlign(LEFT, TOP);
-    text(roundNumber(v1.vector.y, 1), CENTER_SCALED.x + v1.vector.x*DRAW_SCALE, CENTER_SCALED.y + v1.vector.y*DRAW_SCALE/2);
+    if (cb_showV1.checked) {
+        fill(200, 40, 40);
+        textAlign(CENTER);
+        text(roundNumber(v1.vector.x, 1), CENTER_SCALED.x + v1.vector.x*DRAW_SCALE/2, CENTER_SCALED.y - 5);
+        textAlign(LEFT, TOP);
+        text(roundNumber(v1.vector.y, 1), CENTER_SCALED.x + v1.vector.x*DRAW_SCALE, CENTER_SCALED.y + v1.vector.y*DRAW_SCALE/2)
+    }
 
     // v2 text
-    fill(40, 40, 200);
-    textAlign(CENTER);
-    text(roundNumber(v2.vector.x, 1), CENTER_SCALED.x + v2.vector.x*DRAW_SCALE/2, CENTER_SCALED.y + 5);
-    textAlign(RIGHT);
-    text(roundNumber(v2.vector.y, 1), CENTER_SCALED.x + v2.vector.x*DRAW_SCALE, CENTER_SCALED.y + v2.vector.y*DRAW_SCALE/2);
+    if (cb_showV2.checked) {
+        fill(40, 40, 200);
+        textAlign(CENTER, TOP);
+        text(roundNumber(v2.vector.x, 1), CENTER_SCALED.x + v2.vector.x*DRAW_SCALE/2, CENTER_SCALED.y + 5);
+        textAlign(RIGHT);
+        text(roundNumber(v2.vector.y, 1), CENTER_SCALED.x + v2.vector.x*DRAW_SCALE, CENTER_SCALED.y + v2.vector.y*DRAW_SCALE/2);
+    }
 
     pop();
 }
