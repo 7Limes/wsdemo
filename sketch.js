@@ -1,12 +1,12 @@
-const WIDTH = 500;
-const HEIGHT = 500;
-const DRAW_SCALE = 100;
+const CANVAS_WIDTH = Math.min(window.innerWidth-15, 500);
+const CANVAS_HEIGHT = CANVAS_WIDTH;
+const DRAW_SCALE = CANVAS_WIDTH / 5;
 
-let CANVAS_LEFT = WIDTH / DRAW_SCALE / -2
-let CANVAS_RIGHT = WIDTH / DRAW_SCALE / 2;
+let CANVAS_LEFT = CANVAS_WIDTH / DRAW_SCALE / -2
+let CANVAS_RIGHT = CANVAS_WIDTH / DRAW_SCALE / 2;
 
 // Vector globals
-let mousePos = null;
+let mouseVec = null;
 
 let v1 = null;
 let v2 = null;
@@ -29,6 +29,12 @@ let b_normalizeV2 = document.getElementById('b_normalizeV2');
 
 let sel_operation = document.getElementById('sel_operation');
 
+let cb_showV1 = document.getElementById('cb_showV1');
+let cb_showV2 = document.getElementById('cb_showV2');
+let cb_showV3 = document.getElementById('cb_showV3');
+let cb_showAngle = document.getElementById('cb_showAngle');
+let cb_showTriangles = document.getElementById('cb_showTriangles');
+
 
 class DrawableVector {
     constructor(x, y, color, selectable=true, arrowSize=10) {
@@ -39,7 +45,7 @@ class DrawableVector {
     }
 
     isMouseOver() {
-        let checkPos = mousePos.copy().mult(1 / DRAW_SCALE).sub(CENTER_POS);
+        let checkPos = mouseVec.copy().mult(1 / DRAW_SCALE).sub(CENTER_POS);
         return checkPos.dist(this.vector) < 0.25;
     }
 
@@ -80,7 +86,7 @@ function drawArrow(x, y, vec, color, arrowSize) {
 
 
 // https://stackoverflow.com/a/7343013
-function round(value, precision) {
+function roundNumber(value, precision) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
 }
@@ -105,15 +111,15 @@ function clampVector(vec, lower, upper) {
 
 
 function updateInputs() {
-    i_v1x.value = round(v1.vector.x, 1);
-    i_v1y.value = round(v1.vector.y, 1);
-    i_v2x.value = round(v2.vector.x, 1);
-    i_v2y.value = round(v2.vector.y, 1);
+    i_v1x.value = roundNumber(v1.vector.x, 1);
+    i_v1y.value = roundNumber(v1.vector.y, 1);
+    i_v2x.value = roundNumber(v2.vector.x, 1);
+    i_v2y.value = roundNumber(v2.vector.y, 1);
 }
 
 
 function drawGrid() {
-    const LINE_COUNT = WIDTH / DRAW_SCALE;
+    const LINE_COUNT = CANVAS_WIDTH / DRAW_SCALE;
     const OFFSET = DRAW_SCALE / 2;
 
     push();
@@ -121,12 +127,12 @@ function drawGrid() {
 
     for (let i = 0; i < LINE_COUNT; i++) {
         let x = i * DRAW_SCALE + OFFSET;
-        line(x, 0, x, HEIGHT);
+        line(x, 0, x, CANVAS_HEIGHT);
     }
 
     for (let i = 0; i < LINE_COUNT; i++) {
         let y = i * DRAW_SCALE + OFFSET;
-        line(0, y, WIDTH, y);
+        line(0, y, CANVAS_WIDTH, y);
     }
 
     pop();
@@ -145,6 +151,9 @@ function updateResultVector() {
             let dot = v1.vector.dot(v2.vector);
             v3.vector = createVector(dot, 0);
             break;
+        case "norm_dot":
+            let normDot = v1.vector.copy().normalize().dot(v2.vector.copy().normalize());
+            v3.vector = createVector(normDot, 0);
     }
 }
 
@@ -160,7 +169,7 @@ function drawAngleBetween() {
     }
     const labelPos = CENTER_SCALED.copy().add(labelShiftVec);
 
-    const angleText = `${round(degrees(angle), 0)}°`;
+    const angleText = `${roundNumber(degrees(angle), 0)}°`;
 
     push();
     textAlign(CENTER, CENTER);
@@ -172,38 +181,89 @@ function drawAngleBetween() {
 }
 
 
+function drawVectorTriangles() {
+    const v1Transformed = v1.vector.copy().add(CENTER_POS).mult(DRAW_SCALE);
+    const v2Transformed = v2.vector.copy().add(CENTER_POS).mult(DRAW_SCALE);
+
+    push();
+    stroke(200, 150, 230, 200);
+    drawingContext.setLineDash([5]);
+
+    // v1 lines
+    line(CENTER_SCALED.x, CENTER_SCALED.y, v1Transformed.x, CENTER_SCALED.y);
+    line(v1Transformed.x, v1Transformed.y, v1Transformed.x, CENTER_SCALED.y);
+
+    
+    // v2 lines
+    line(CENTER_SCALED.x, CENTER_SCALED.y, v2Transformed.x, CENTER_SCALED.y);
+    line(v2Transformed.x, v2Transformed.y, v2Transformed.x, CENTER_SCALED.y);
+    
+    noStroke();
+
+    // v1 text
+    fill(200, 40, 40);
+    textAlign(CENTER);
+    text(roundNumber(v1.vector.x, 1), CENTER_SCALED.x + v1.vector.x*DRAW_SCALE/2, CENTER_SCALED.y - 5);
+    textAlign(LEFT, TOP);
+    text(roundNumber(v1.vector.y, 1), CENTER_SCALED.x + v1.vector.x*DRAW_SCALE, CENTER_SCALED.y + v1.vector.y*DRAW_SCALE/2);
+
+    // v2 text
+    fill(40, 40, 200);
+    textAlign(CENTER);
+    text(roundNumber(v2.vector.x, 1), CENTER_SCALED.x + v2.vector.x*DRAW_SCALE/2, CENTER_SCALED.y + 5);
+    textAlign(RIGHT);
+    text(roundNumber(v2.vector.y, 1), CENTER_SCALED.x + v2.vector.x*DRAW_SCALE, CENTER_SCALED.y + v2.vector.y*DRAW_SCALE/2);
+
+    pop();
+}
+
+
 function setup() {
-    let canvas = createCanvas(WIDTH, HEIGHT);
+    let canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     canvas.parent('canvasContainer')
 
-    CENTER_SCALED = createVector(WIDTH/2, HEIGHT/2);
+    CENTER_SCALED = createVector(CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
     CENTER_POS = CENTER_SCALED.copy().mult(1 / DRAW_SCALE);
 
-    mousePos = createVector(mouseX, mouseY);
+    mouseVec = createVector(mouseX, mouseY);
 
     v1 = new DrawableVector(1, -1, color(255, 0, 0));
     v2 = new DrawableVector(1, 0.5, color(0, 0, 255));
     v3 = new DrawableVector(0, 0, color(0, 255, 0), false, 5);
+
+    updateInputs();
 }
 
 
 function draw() {
-    mousePos.x = mouseX;
-    mousePos.y = mouseY;
+    mouseVec.x = mouseX;
+    mouseVec.y = mouseY;
 
     updateResultVector();
 
     background(240, 240, 240);
     drawGrid();
 
-    v1.draw();
-    v2.draw();
-    v3.draw();
+    if (cb_showTriangles.checked) {
+        drawVectorTriangles();
+    }
 
-    drawAngleBetween();
+    if (cb_showV1.checked) {
+        v1.draw();
+    }
+    if (cb_showV2.checked) {
+        v2.draw();
+    }
+    if (cb_showV3.checked) {
+        v3.draw();
+    }
+
+    if (cb_showAngle.checked && cb_showV1.checked && cb_showV2.checked) {
+        drawAngleBetween();
+    }
 
     if (selectedVector !== null) {
-        let vec = mousePos.copy().mult(1 / DRAW_SCALE).sub(CENTER_POS);
+        let vec = mouseVec.copy().mult(1 / DRAW_SCALE).sub(CENTER_POS);
         selectedVector.vector = clampVector(vec, CANVAS_LEFT, CANVAS_RIGHT);
         updateInputs();
     }
@@ -220,7 +280,7 @@ function setComponent(vecObj, axis, input) {
     if (!Number.isNaN(parsed)) {
         vecObj.vector[axis] = clampNumber(parsed, CANVAS_LEFT, CANVAS_RIGHT);
     }
-    input.value = round(vecObj.vector[axis], 1); // resync the field
+    input.value = roundNumber(vecObj.vector[axis], 1); // resync the field
 }
 
 i_v1x.addEventListener("change", () => setComponent(v1, 'x', i_v1x));
@@ -232,8 +292,10 @@ i_v2y.addEventListener("change", () => setComponent(v2, 'y', i_v2y));
 // Click normalize buttons
 b_normalizeV1.addEventListener("click", () => {
     v1.vector.normalize();
+    updateInputs();
 });
 
 b_normalizeV2.addEventListener("click", () => {
     v2.vector.normalize();
+    updateInputs();
 });

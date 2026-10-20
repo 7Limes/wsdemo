@@ -27,6 +27,17 @@ button:hover {
     transition: background-color 0.25s;
 }
 
+/* https://stackoverflow.com/a/4407335 */
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                          supported by Chrome, Edge, Opera and Firefox */
+}
+
 .vector-controls {
     background-color: #505050;
     display: flex;
@@ -38,7 +49,7 @@ button:hover {
     padding: 5px;
     border-radius: 5px;
     
-    width: 500px;
+    max-width: 500px;
 }
 
 .vector-controls.red {
@@ -55,4 +66,18 @@ button:hover {
 
 .vector-controls input {
     width: 50px;
+}
+
+.settings {
+    background-color: #606060;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+    max-width: 500px;
+}
+
+.settings p {
+    margin: 0
 }
