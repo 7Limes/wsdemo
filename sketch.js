@@ -2,8 +2,10 @@ const CANVAS_WIDTH = Math.min(window.innerWidth-15, 500);
 const CANVAS_HEIGHT = CANVAS_WIDTH;
 const DRAW_SCALE = CANVAS_WIDTH / 5;
 
-let CANVAS_LEFT = CANVAS_WIDTH / DRAW_SCALE / -2
-let CANVAS_RIGHT = CANVAS_WIDTH / DRAW_SCALE / 2;
+const CANVAS_LEFT = CANVAS_WIDTH / DRAW_SCALE / -2
+const CANVAS_RIGHT = CANVAS_WIDTH / DRAW_SCALE / 2;
+
+const RESULT_VEC_TWEEN_DURATION = 0.25;
 
 // Vector globals
 let mouseVec = null;
@@ -13,6 +15,10 @@ let v2 = null;
 let v3 = null;
 
 let selectedVector = null;
+
+let resultVectorStart = null;
+let resultVectorTarget = null;
+let resultVectorTweenTimer = 0.0;
 
 let CENTER_POS = null;
 let CENTER_SCALED = null;
@@ -92,6 +98,14 @@ function roundNumber(value, precision) {
 }
 
 
+function moveToward(from, to, delta) {
+    if (Math.abs(to - from) <= delta) {
+        return to;
+    }
+    return from + Math.sign(to - from) * delta;
+}
+
+
 function clampNumber(value, lower, upper) {
     if (value < lower) {
         return lower;
@@ -140,20 +154,28 @@ function drawGrid() {
 
 
 function updateResultVector() {
+    let result = null;
     switch (sel_operation.value) {
         case "add":
-            v3.vector = v1.vector.copy().add(v2.vector);
+            result = v1.vector.copy().add(v2.vector);
             break;
         case "sub":
-            v3.vector = v1.vector.copy().sub(v2.vector);
+            result = v1.vector.copy().sub(v2.vector);
             break;
         case "dot":
             let dot = v1.vector.dot(v2.vector);
-            v3.vector = createVector(dot, 0);
+            result = createVector(dot, 0);
             break;
         case "norm_dot":
             let normDot = v1.vector.copy().normalize().dot(v2.vector.copy().normalize());
-            v3.vector = createVector(normDot, 0);
+            result = createVector(normDot, 0);
+    }
+
+    // Only restart the tween when the target actually changes
+    if (resultVectorTarget === null || !result.equals(resultVectorTarget)) {
+        resultVectorStart = v3.vector.copy();
+        resultVectorTarget = result;
+        resultVectorTweenTimer = 0.0;
     }
 }
 
@@ -217,6 +239,17 @@ function drawVectorTriangles() {
     pop();
 }
 
+function drawResultVector() {
+    if (resultVectorTarget !== null && resultVectorTweenTimer < RESULT_VEC_TWEEN_DURATION) {
+        resultVectorTweenTimer = moveToward(resultVectorTweenTimer, RESULT_VEC_TWEEN_DURATION, deltaTime / 1000);
+        const t = resultVectorTweenTimer / RESULT_VEC_TWEEN_DURATION;
+        const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+        v3.vector = p5.Vector.lerp(resultVectorStart, resultVectorTarget, eased);
+    }
+
+    v3.draw();
+}
+
 
 function setup() {
     let canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -229,7 +262,7 @@ function setup() {
 
     v1 = new DrawableVector(1, -1, color(255, 0, 0));
     v2 = new DrawableVector(1, 0.5, color(0, 0, 255));
-    v3 = new DrawableVector(0, 0, color(0, 255, 0), false, 5);
+    v3 = new DrawableVector(0, 0, color(0, 200, 0), false, 5);
 
     updateInputs();
 }
@@ -255,7 +288,7 @@ function draw() {
         v2.draw();
     }
     if (cb_showV3.checked) {
-        v3.draw();
+        drawResultVector();
     }
 
     if (cb_showAngle.checked && cb_showV1.checked && cb_showV2.checked) {
