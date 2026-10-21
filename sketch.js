@@ -35,6 +35,7 @@ let b_normalizeV2 = document.getElementById('b_normalizeV2');
 
 let sel_operation = document.getElementById('sel_operation');
 let i_lerpTSlider = document.getElementById('i_lerpTSlider');
+let l_lerpT = document.getElementById('l_lerpT');
 let lerpTContainer = document.getElementById('lerpTContainer');
 
 let cb_showV1 = document.getElementById('cb_showV1');
@@ -385,4 +386,9 @@ sel_operation.addEventListener("change", () => {
     else {
         lerpTContainer.classList.add("hidden");
     }
+})
+
+
+i_lerpTSlider.addEventListener("input", () => {
+    l_lerpT.innerText = parseInt(i_lerpTSlider.value) / 100;
 })
