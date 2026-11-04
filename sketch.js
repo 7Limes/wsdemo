@@ -7,6 +7,8 @@ const CANVAS_RIGHT = CANVAS_WIDTH / DRAW_SCALE / 2;
 
 const RESULT_VEC_TWEEN_DURATION = 0.25;
 
+const SCROLL_INCREMENT = 0.1;
+
 // Vector globals
 let mouseVec = null;
 
@@ -372,7 +374,18 @@ function setComponent(vecObj, axis, input) {
     if (!Number.isNaN(parsed)) {
         vecObj.vector[axis] = clampNumber(parsed, CANVAS_LEFT, CANVAS_RIGHT);
     }
-    input.value = roundNumber(vecObj.vector[axis], 1); // resync the field
+    input.value = roundNumber(vecObj.vector[axis], 1);
+}
+
+
+function scrollEvent(event, vecObj, axis, input) {
+    const inputValue = parseFloat(input.value);
+    if (!Number.isNaN(inputValue)) {
+        const multiplier = event.deltaY < 0 ? -1 : 1;
+        const result = inputValue + SCROLL_INCREMENT*multiplier;
+        vecObj.vector[axis] = clampNumber(result, CANVAS_LEFT, CANVAS_RIGHT);
+    }
+    input.value = roundNumber(vecObj.vector[axis], 1);
 }
 
 i_v1x.addEventListener("change", () => setComponent(v1, 'x', i_v1x));
@@ -380,6 +393,12 @@ i_v1y.addEventListener("change", () => setComponent(v1, 'y', i_v1y));
 i_v2x.addEventListener("change", () => setComponent(v2, 'x', i_v2x));
 i_v2y.addEventListener("change", () => setComponent(v2, 'y', i_v2y));
 
+
+// Scroll on input boxes
+i_v1x.addEventListener("wheel", (e) => scrollEvent(e, v1, 'x', i_v1x))
+i_v1y.addEventListener("wheel", (e) => scrollEvent(e, v1, 'y', i_v1y))
+i_v2x.addEventListener("wheel", (e) => scrollEvent(e, v2, 'x', i_v2x))
+i_v2y.addEventListener("wheel", (e) => scrollEvent(e, v2, 'y', i_v2y))
 
 // Click normalize buttons
 b_normalizeV1.addEventListener("click", () => {
