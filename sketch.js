@@ -160,14 +160,28 @@ function drawGrid() {
     push();
     stroke(220, 220, 220);
 
+    // Vertical lines
     for (let i = 0; i < LINE_COUNT; i++) {
         let x = i * DRAW_SCALE + OFFSET;
         line(x, 0, x, CANVAS_HEIGHT);
+
+        push();
+        fill(100, 100, 100);
+        textAlign(CENTER, BOTTOM)
+        text(i-2, x, CANVAS_HEIGHT)
+        pop();
     }
 
+    // Horizontal lines
     for (let i = 0; i < LINE_COUNT; i++) {
         let y = i * DRAW_SCALE + OFFSET;
         line(0, y, CANVAS_WIDTH, y);
+
+        push();
+        fill(100, 100, 100);
+        textAlign(LEFT, CENTER)
+        text(i-2, 3, y)
+        pop();
     }
 
     pop();
