@@ -93,6 +93,12 @@ button:hover {
     max-width: 500px;
 }
 
+.settings-checkboxes {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
 .settings p {
     margin: 0
 }
