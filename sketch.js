@@ -196,8 +196,11 @@ function updateResultVector() {
         case "add":
             result = v1.vector.copy().add(v2.vector);
             break;
-        case "sub":
+        case "sub12":
             result = v1.vector.copy().sub(v2.vector);
+            break;
+        case "sub21":
+            result = v2.vector.copy().sub(v1.vector);
             break;
         case "dot":
             let dot = v1.vector.dot(v2.vector);
@@ -312,6 +315,22 @@ function drawResultVector(drawAsPosition=false) {
 }
 
 
+function updateCursor() {
+    const isOverV1 = cb_showV1.checked && v1.isMouseOver();
+    const isOverV2 = cb_showV2.checked && v2.isMouseOver();
+
+    if (selectedVector !== null) {
+        cursor('grabbing');
+    }
+    else if (isOverV1 || isOverV2) {
+        cursor('grab');
+    }
+    else {
+        cursor(ARROW);
+    }
+}
+
+
 function setup() {
     let canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     canvas.parent('canvasContainer')
@@ -361,6 +380,8 @@ function draw() {
         selectedVector.vector = clampVector(vec, CANVAS_LEFT, CANVAS_RIGHT);
         updateInputs();
     }
+
+    updateCursor();
 }
 
 
@@ -381,7 +402,7 @@ function setComponent(vecObj, axis, input) {
 function scrollEvent(event, vecObj, axis, input) {
     const inputValue = parseFloat(input.value);
     if (!Number.isNaN(inputValue)) {
-        const multiplier = event.deltaY < 0 ? -1 : 1;
+        const multiplier = event.deltaY < 0 ? 1 : -1;
         const result = inputValue + SCROLL_INCREMENT*multiplier;
         vecObj.vector[axis] = clampNumber(result, CANVAS_LEFT, CANVAS_RIGHT);
     }

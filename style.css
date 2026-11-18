@@ -27,6 +27,23 @@ button:hover {
     transition: background-color 0.25s;
 }
 
+.play-button {
+    display: block;
+    width: 100%;
+    max-width: 500px;
+    padding: 10px;
+
+    background-color: #2e7d32;
+    border-color: #2e7d32;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.play-button:hover {
+    background-color: #1f6a24;
+}
+
 /* https://stackoverflow.com/a/4407335 */
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */

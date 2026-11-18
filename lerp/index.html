@@ -4,13 +4,45 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Vector math</title>
+    <title>Basic Interpolation</title>
+
+    <link rel="stylesheet" type="text/css" href="../style.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.3.4/p5.min.js" integrity="sha512-zGE8CPs+hefOAOSuF8c8Hbt/DDoL+hsJax12U8UCPomxYkPMf4qhQmJTwSG7KzDjmemumjHFF13pUpouT4Ka1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </head>
 
   <body>
     <div id="canvasContainer"></div>
+
+    <button id="b_play" class="play-button">▶ Play</button>
+
+    <div class="vector-controls">
+      <label for="sel_easing">Easing:</label>
+      <select id="sel_easing">
+        <option value="linear" selected>Linear</option>
+        <option value="easeInQuad">Ease In (Quadratic)</option>
+        <option value="easeOutQuad">Ease Out (Quadratic)</option>
+        <option value="easeInOutQuad">Ease In-Out (Quadratic)</option>
+        <option value="easeInCubic">Ease In (Cubic)</option>
+        <option value="easeOutCubic">Ease Out (Cubic)</option>
+        <option value="easeInOutCubic">Ease In-Out (Cubic)</option>
+        <option value="easeOutBack">Ease Out (Back)</option>
+        <option value="easeOutBounce">Ease Out (Bounce)</option>
+      </select>
+    </div>
+
+    <div class="settings">
+      <div class="lerp-container">
+        <label for="i_pathCountSlider">Path circles:</label>
+        <input type="range" id="i_pathCountSlider" min="5" max="50" step="1" value="19">
+        <label id="l_pathCount">19</label>
+      </div>
+      <div>
+        <input type="checkbox" id="cb_scaleByVelocity">
+        <label for="cb_scaleByVelocity" class="noselect">Scale path circles by velocity</label>
+      </div>
+    </div>
+
     <script src="sketch.js"></script>
   </body>
 </html>
